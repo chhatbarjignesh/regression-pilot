@@ -30,13 +30,40 @@ class DOMInspector:
     def inspect(self, failure: TestFailure, page_url: str) -> DOMDiff:
         """
         1. Parse the broken selector from the error / stack trace
-        2. Launch browser, navigate to page_url
-        3. Capture full DOM around the broken selector's parent
-        4. Generate candidate replacement selectors
+        2. If a DOM snapshot was captured at failure time, use it directly —
+           avoids re-navigation which breaks authenticated/stateful pages.
+        3. Otherwise launch a browser and navigate to page_url (static pages only).
+        4. Generate candidate replacement selectors from whichever HTML source is used.
         """
         broken_selector, broken_line = self._extract_selector(failure)
         logger.info(f"[inspector] Broken selector: {broken_selector!r} at line {broken_line}")
 
+        if failure.dom_snapshot:
+            logger.info("[inspector] Using DOM snapshot from failure payload — skipping browser navigation")
+            return self._inspect_from_snapshot(failure, broken_selector, broken_line)
+
+        return self._inspect_via_browser(failure, broken_selector, broken_line, page_url)
+
+    def _inspect_from_snapshot(
+        self, failure: TestFailure, broken_selector: str, broken_line: int
+    ) -> DOMDiff:
+        """Use the pre-captured DOM snapshot instead of opening a browser."""
+        html = failure.dom_snapshot
+        old_html_snippet = self._extract_context(html, broken_selector)
+        candidates = self._candidates_from_html(html, broken_selector)
+        return DOMDiff(
+            broken_selector=broken_selector,
+            broken_line=broken_line,
+            old_html_snippet=old_html_snippet,
+            new_html_snippet=html[:4000],
+            suggested_selectors=candidates,
+            page_url="",
+        )
+
+    def _inspect_via_browser(
+        self, failure: TestFailure, broken_selector: str, broken_line: int, page_url: str
+    ) -> DOMDiff:
+        """Launch a real browser, navigate to page_url, and inspect the live DOM."""
         adapter_cls = self._adapters.get(failure.framework)
         if adapter_cls is None:
             raise ValueError(f"Unsupported framework: {failure.framework}")
@@ -55,7 +82,7 @@ class DOMInspector:
             broken_selector=broken_selector,
             broken_line=broken_line,
             old_html_snippet=old_html_snippet,
-            new_html_snippet=new_html[:4000],   # cap for LLM context
+            new_html_snippet=new_html[:4000],
             suggested_selectors=candidates,
             page_url=page_url,
         )
@@ -104,6 +131,30 @@ class DOMInspector:
                     return int(m.group(1))
                 return i
         return 0
+
+    def _candidates_from_html(self, html: str, broken_selector: str) -> list[str]:
+        """
+        Extract candidate selectors from raw HTML without a live browser.
+        Looks for id, data-testid, name, and class attributes near the broken selector's context.
+        """
+        candidates: list[str] = []
+        context = self._extract_context(html, broken_selector)
+
+        for attr, prefix in [("id", "#"), ("data-testid", '[data-testid="'), ("name", '[name="')]:
+            for m in re.finditer(rf'{attr}=["\']([^"\']+)["\']', context):
+                val = m.group(1)
+                suffix = '"]' if prefix.startswith("[") else ""
+                candidate = f"{prefix}{val}{suffix}"
+                if candidate not in candidates:
+                    candidates.append(candidate)
+
+        for m in re.finditer(r'class=["\']([^"\']+)["\']', context):
+            first_class = m.group(1).split()[0]
+            candidate = f".{first_class}"
+            if candidate not in candidates:
+                candidates.append(candidate)
+
+        return candidates[:10]
 
     def _extract_context(self, html: str, selector: str) -> str:
         """Return a 2000-char window of HTML around where selector appears."""

@@ -38,6 +38,7 @@ class TestFailure:
     commit_sha: str
     ci_build_url: str = ""
     run_id: str = ""
+    dom_snapshot: str = ""  # full page HTML captured at moment of failure
 
 
 @dataclass

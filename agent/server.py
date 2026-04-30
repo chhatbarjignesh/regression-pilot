@@ -59,6 +59,7 @@ class FailurePayload(BaseModel):
     commit_sha: str
     page_url: str = ""
     ci_build_url: str = ""
+    dom_snapshot: str = ""  # full page HTML captured at moment of failure
 
 
 class HealResponse(BaseModel):
@@ -87,6 +88,7 @@ async def receive_failure(
         commit_sha=payload.commit_sha,
         ci_build_url=payload.ci_build_url,
         run_id=run_id,
+        dom_snapshot=payload.dom_snapshot,
     )
 
     await heal_repo.create(run_id, payload.model_dump())
