@@ -7,7 +7,8 @@ RUN apt-get update && apt-get install -y \
     curl wget gnupg nodejs npm \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml .
+COPY pyproject.toml README.md ./
+
 RUN pip install -e ".[dev]" && playwright install chromium --with-deps
 
 COPY . .
