@@ -8,7 +8,6 @@ import logging
 from typing import Optional
 
 from sqlalchemy import select, desc, func
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from agent.db.models import HealEvent
 from agent.db.engine import get_session
