@@ -12,7 +12,7 @@ import re
 from anthropic import Anthropic
 
 from config.settings import settings
-from agent.models import FailureType, Framework, TestFailure
+from agent.models import FailureType, TestFailure
 
 logger = logging.getLogger(__name__)
 

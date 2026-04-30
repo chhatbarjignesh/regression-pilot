@@ -2,8 +2,6 @@
 Selenium adapter — wraps Selenium WebDriver for DOM inspection.
 """
 from __future__ import annotations
-import re
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service

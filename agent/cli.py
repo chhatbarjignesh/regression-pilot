@@ -2,7 +2,6 @@
 CLI — run the server or trigger a manual heal from the command line.
 """
 from __future__ import annotations
-import json
 import typer
 import uvicorn
 from rich.console import Console

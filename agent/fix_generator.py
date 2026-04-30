@@ -12,7 +12,7 @@ import re
 from anthropic import Anthropic
 
 from config.settings import settings
-from agent.models import DOMDiff, FixProposal, Framework, TestFailure
+from agent.models import DOMDiff, FixProposal, TestFailure
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ class FixGenerator:
             return source[:2000]
         start = max(0, line_no - context - 1)
         end = min(len(lines), line_no + context)
-        numbered = [f"{i+1:>4}: {l}" for i, l in enumerate(lines[start:end], start)]
+        numbered = [f"{i+1:>4}: {line}" for i, line in enumerate(lines[start:end], start)]
         return "\n".join(numbered)
 
     def _build_prompt(

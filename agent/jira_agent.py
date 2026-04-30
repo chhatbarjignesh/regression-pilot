@@ -11,7 +11,7 @@ from base64 import b64encode
 import httpx
 
 from config.settings import settings
-from agent.models import FailureType, FixProposal, HealResult, TestFailure
+from agent.models import HealResult, TestFailure
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,6 @@ class JiraAgent:
 
     def log_maintenance(self, result: HealResult) -> str:
         """Create a Jira story recording the auto-heal event. Returns issue key."""
-        fix = result.fix
         summary = f"[RegressionPilot] Auto-healed: {result.failure.test_name}"
         description = self._maintenance_description(result)
         key = self._create_issue(

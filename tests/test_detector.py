@@ -1,7 +1,6 @@
 """
 Tests for the failure detector — uses mocked Claude responses.
 """
-import pytest
 from unittest.mock import MagicMock, patch
 
 from agent.detector import FailureDetector
