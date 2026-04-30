@@ -141,4 +141,4 @@ See [CONTRIBUTING.md](docs/CONTRIBUTING.md). PRs welcome!
 
 ## License
 
-MIT © 2025 — Built with ❤️ at Infosys QE Hackathon
+MIT © 2025 — Built with ❤️
