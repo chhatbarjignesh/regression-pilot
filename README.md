@@ -2,7 +2,7 @@
 
 > AI agent that self-heals broken UI tests for Playwright and Selenium
 
-[![CI](https://github.com/yourorg/regression-pilot/actions/workflows/ci.yml/badge.svg)](https://github.com/yourorg/regression-pilot/actions)
+[![CI](https://github.com/chhatbarjignesh/regression-pilot/actions/workflows/ci.yml/badge.svg)](https://github.com/yourorg/regression-pilot/actions)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
