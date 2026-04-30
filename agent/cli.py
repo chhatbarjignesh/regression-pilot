@@ -18,7 +18,7 @@ def serve(
     host: str = typer.Option("0.0.0.0", help="Bind host"),
     port: int = typer.Option(8000, help="Bind port"),
     reload: bool = typer.Option(False, help="Hot reload for development"),
-):
+) -> None:
     """Start the RegressionPilot webhook server."""
     console.print("[bold green]Starting RegressionPilot server...[/bold green]")
     uvicorn.run("agent.server:app", host=host, port=port, reload=reload)
@@ -35,7 +35,7 @@ def heal(
     branch: str = typer.Option("main", help="Current branch"),
     commit: str = typer.Option("HEAD", help="Commit SHA"),
     page_url: str = typer.Option("", help="URL of the page under test"),
-):
+) -> None:
     """Manually trigger a heal cycle for a specific test failure."""
     from agent.orchestrator import Orchestrator
 

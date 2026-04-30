@@ -105,7 +105,10 @@ Respond with ONLY one of: ui_change, real_bug, flaky, unknown
                 max_tokens=20,
                 messages=[{"role": "user", "content": prompt}],
             )
-            raw = response.content[0].text.strip().lower()
+            block = response.content[0]
+            if not hasattr(block, "text"):
+                return FailureType.UNKNOWN
+            raw = block.text.strip().lower()
             return FailureType(raw) if raw in FailureType._value2member_map_ else FailureType.UNKNOWN
         except Exception as exc:
             logger.warning(f"[detector] AI classify failed: {exc} — defaulting to UNKNOWN")

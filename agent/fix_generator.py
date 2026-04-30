@@ -111,7 +111,8 @@ Fix the broken selector. Return JSON only."""
             system=_SYSTEM_PROMPT,
             messages=[{"role": "user", "content": prompt}],
         )
-        return response.content[0].text.strip()
+        block = response.content[0]
+        return block.text.strip()  # type: ignore[union-attr]
 
     def _parse_response(self, raw: str, fallback_original: str) -> FixProposal:
         # Strip accidental markdown fences

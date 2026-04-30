@@ -3,7 +3,8 @@ Playwright adapter — wraps playwright sync API for DOM inspection.
 """
 from __future__ import annotations
 import re
-from playwright.sync_api import sync_playwright, Browser, Page
+from typing import Optional
+from playwright.sync_api import sync_playwright, Browser, Page, Playwright
 
 from adapters.base import BrowserAdapter
 
@@ -11,7 +12,7 @@ from adapters.base import BrowserAdapter
 class PlaywrightAdapter(BrowserAdapter):
     def __init__(self, headless: bool = True) -> None:
         self._headless = headless
-        self._pw = None
+        self._pw: Optional[Playwright] = None
         self._browser: Browser | None = None
         self._page: Page | None = None
 

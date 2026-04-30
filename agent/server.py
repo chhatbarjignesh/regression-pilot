@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import uuid
 from contextlib import asynccontextmanager
-from typing import Any
+from typing import Any, AsyncGenerator
 
 from fastapi import FastAPI, BackgroundTasks, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,7 +23,7 @@ _heal_log: dict[str, dict[str, Any]] = {}
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("RegressionPilot starting up")
     yield
     logger.info("RegressionPilot shutting down")
@@ -69,7 +69,7 @@ class HealResponse(BaseModel):
 
 
 @app.post("/webhook/failure", response_model=HealResponse, status_code=202)
-async def receive_failure(payload: FailurePayload, background_tasks: BackgroundTasks):
+async def receive_failure(payload: FailurePayload, background_tasks: BackgroundTasks) -> HealResponse:
     """
     CI pipeline posts here when a test fails.
     Immediately returns 202 Accepted and heals in the background.
@@ -93,7 +93,7 @@ async def receive_failure(payload: FailurePayload, background_tasks: BackgroundT
 
 
 @app.get("/heal/{run_id}")
-async def get_heal_status(run_id: str):
+async def get_heal_status(run_id: str) -> dict[str, Any]:
     """Poll heal status for a given run_id."""
     if run_id not in _heal_log:
         raise HTTPException(status_code=404, detail="Run not found")
@@ -101,14 +101,14 @@ async def get_heal_status(run_id: str):
 
 
 @app.get("/heals")
-async def list_heals(limit: int = 50):
+async def list_heals(limit: int = 50) -> dict[str, Any]:
     """Return the most recent heal events for the dashboard."""
     items = list(_heal_log.values())[-limit:]
     return {"heals": items, "total": len(_heal_log)}
 
 
 @app.get("/health")
-async def health():
+async def health() -> dict[str, str]:
     return {"status": "ok", "version": "0.1.0"}
 
 

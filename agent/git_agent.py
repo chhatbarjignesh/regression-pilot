@@ -120,6 +120,6 @@ Please review the change and merge if it looks correct.*
                 json=payload,
             )
             resp.raise_for_status()
-            pr_url = resp.json().get("html_url", "")
+            pr_url: str = resp.json().get("html_url", "")
             logger.info(f"[git] PR opened: {pr_url}")
             return pr_url

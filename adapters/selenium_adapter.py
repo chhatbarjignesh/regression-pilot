@@ -36,7 +36,7 @@ class SeleniumAdapter(BrowserAdapter):
 
     def get_page_html(self) -> str:
         assert self._driver, "Adapter not started"
-        return self._driver.page_source
+        return str(self._driver.page_source)
 
     def find_similar_selectors(self, broken_selector: str) -> list[str]:
         assert self._driver, "Adapter not started"

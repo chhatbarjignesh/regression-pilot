@@ -108,7 +108,7 @@ class JiraAgent:
         with httpx.Client(headers=self._headers, timeout=30) as client:
             resp = client.post(f"{self._base}/rest/api/3/issue", json=payload)
             resp.raise_for_status()
-            return resp.json()["key"]
+            return str(resp.json()["key"])
 
     def _maintenance_description(self, result: HealResult) -> str:
         fix = result.fix
